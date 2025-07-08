@@ -3,55 +3,53 @@ set -e
 
 workdir=$(mktemp -d)
 
-yt-dlp -f bestaudio --extract-audio --audio-format mp3 \
+yt-dlp -f bestaudio --extract-audio --audio-format flac \
   --embed-metadata --add-metadata \
   --write-thumbnail --output "$workdir/%(artist)s - %(title)s.%(ext)s" "$@"
 
-# locate audio and thumb
-mp3_file=$(find "$workdir" -type f -name "*.mp3" | head -n 1)
+flac_file=$(find "$workdir" -type f -name "*.flac" | head -n 1)
 thumb_file=$(find "$workdir" -type f \( -iname "*.jpg" -o -iname "*.webp" \) | head -n 1)
 
-# convert to jpg
 if [[ "$thumb_file" != *.jpg ]]; then
     new_thumb="${thumb_file%.*}.jpg"
     magick "$thumb_file" "$new_thumb"
     thumb_file="$new_thumb"
 fi
 
-# crop
-cropped_thumb="$workdir/cover.jpg"
+# for saving thumbnails in same dir
+#original_thumb="$HOME/Music/$(basename "${flac_file%.flac}")_original.jpg"
+#cropped_thumb="$HOME/Music/$(basename "${flac_file%.flac}")_cover.jpg"
+#cp "$thumb_file" "$original_thumb"
+#magick "$thumb_file" -gravity center -crop 1:1 +repage "$cropped_thumb"
+
+cropped_thumb="$workdir/cropped.jpg"
 magick "$thumb_file" -gravity center -crop 1:1 +repage "$cropped_thumb"
 
-# embed thumbnail 
-python3 <<EOF
-from mutagen.id3 import ID3, APIC, error
-from mutagen.mp3 import MP3
+####
+FLAC_FILE="$flac_file" CROPPED_THUMB="$cropped_thumb" python3 <<EOF
+from mutagen.flac import FLAC, Picture
+import os
 
-audio = MP3("$mp3_file", ID3=ID3)
-try:
-    audio.add_tags()
-except error:
-    pass
+audio = FLAC(os.environ['FLAC_FILE'])
+cropped = os.environ['CROPPED_THUMB']
 
-with open("$cropped_thumb", 'rb') as albumart:
-    audio.tags.add(
-        APIC(
-            encoding=3,         # UTF-8
-            mime='image/jpeg',  # Image MIME type
-            type=3,              # Cover front
-            desc='Cover',
-            data=albumart.read()
-        )
-    )
+audio.clear_pictures()
 
+pic = Picture()
+pic.type = 3  # Front cover
+pic.mime = 'image/jpeg'
+pic.desc = 'Cover'
+
+with open(cropped, 'rb') as f:
+    pic.data = f.read()
+
+audio.add_picture(pic)
 audio.save()
 EOF
+####
 
-
-
-
-mv "$mp3_file" "$HOME/Music/"
+mv "$flac_file" "$HOME/Music/"
 rm -rf "$workdir"
 
-printf "\nDownloaded and tagged: %s\n" "$(basename "$mp3_file")"
+printf "\nDownloaded and tagged: %s\n" "$(basename "$flac_file")"
 read -rp "Press Enter to exit..."

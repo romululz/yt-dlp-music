@@ -1,6 +1,6 @@
 # yt-dlp-music
 
-Simple yt-dlp bash script that formats all audio to FLAC and automatically adds song metadata, including cover art. 
+Simple [yt-dlp](https://github.com/yt-dlp/yt-dlp) bash script that formats all audio to FLAC and automatically adds song metadata, including cover art. 
 
 
 

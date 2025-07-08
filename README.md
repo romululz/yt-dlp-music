@@ -70,7 +70,7 @@ yt-dlp-music "https://music.youtube.com/watch?v=lYBUbBu4W08&si=oxG_6Wv5d9pKLi4O"
 ```
 For best results, it is recommended to download music from YouTube Music (music.youtube.com).
 
-The script uses ```yt-dlp``` to download the audio and thumbnail, converts the audio to FLAC, then uses ```magick``` to crop the 16:9 thumbnail to a more cover-like 1:1 square. Finally, ```metaflac``` is used to embed the cropped image as album art into the FLAC file.
+The script uses ```yt-dlp``` to download the audio as FLAC along with its thumbnail. It then uses ```magick``` to crop the thumbnail from a 16:9 rectangle to a 1:1 square. Finally ```mutagen``` is used to embed the cropped image as album art into the FLAC file.
 
 All music is downloaded to ~/Music/ to change this edit
 

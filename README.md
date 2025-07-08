@@ -7,7 +7,7 @@ Simple [yt-dlp](https://github.com/yt-dlp/yt-dlp) bash script that formats all a
 ### Dependencies
 
 ```
-sudo pacman -S yt-dlp ffmpeg python-mutagen git wget
+sudo pacman -S yt-dlp ffmpeg python-mutagen git wget imagemagick flac
 ```
 
 ### Script Installation

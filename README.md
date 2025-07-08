@@ -69,18 +69,17 @@ yt-dlp-music "https://music.youtube.com/watch?v=lYBUbBu4W08&si=oxG_6Wv5d9pKLi4O"
 ```
 For best results, it is recommended to download music from YouTube Music (music.youtube.com).
 
-```yt-dlp``` is able to extract rich metadata (such as artist, album, track, and genre) directly from the video's JSON data on YouTube Music. You’ll also benefit from higher-quality and more faithful cover art, especially when downloading from official artist channels.
-In contrast, regular YouTube videos only provide basic metadata like the video title and channel name. This may result in inaccurate filenames or missing tags but the script should still work.
+The script uses ```yt-dlp``` to download the audio and thumbnail, converts the audio to FLAC, then uses ```magick``` to convert and crop the 16:9 thumbnail to a more cover-like 1:1 square. Finally, ```metaflac``` is used to embed the cropped image as album art into the FLAC file.
 
 Sometimes yt-dlp pauses on "[EmbedThumbnail]", just press enter if this happens.
 
-All music is downloaded to ~/Music/ to change this edit 
+All music is downloaded to ~/Music/ to change this edit
 
 ```
 ~/.local/bin/yt-dlp-music
 ```
 
-and change --output to your liking
+and change --output to your liking.
 
 
 

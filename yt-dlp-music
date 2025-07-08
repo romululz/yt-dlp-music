@@ -1,37 +1,57 @@
 #!/bin/bash
+set -e
 
 workdir=$(mktemp -d)
 
-# download
-yt-dlp -f bestaudio --extract-audio --audio-format flac \
+yt-dlp -f bestaudio --extract-audio --audio-format mp3 \
   --embed-metadata --add-metadata \
   --write-thumbnail --output "$workdir/%(artist)s - %(title)s.%(ext)s" "$@"
 
-# locate working path
-flac_file=$(find "$workdir" -type f -name "*.flac" | head -n 1)
+# locate audio and thumb
+mp3_file=$(find "$workdir" -type f -name "*.mp3" | head -n 1)
 thumb_file=$(find "$workdir" -type f \( -iname "*.jpg" -o -iname "*.webp" \) | head -n 1)
 
-# web to jpg
-if [[ "$thumb_file" == *.webp ]]; then
-    new_thumb="${thumb_file%.webp}.jpg"
+# convert to jpg
+if [[ "$thumb_file" != *.jpg ]]; then
+    new_thumb="${thumb_file%.*}.jpg"
     magick "$thumb_file" "$new_thumb"
     thumb_file="$new_thumb"
 fi
 
-# album style crop
-cropped_thumb="$workdir/cropped.jpg"
+# crop
+cropped_thumb="$workdir/cover.jpg"
 magick "$thumb_file" -gravity center -crop 1:1 +repage "$cropped_thumb"
 
-# emeb cropped into flac
-metaflac --remove --block-type=PICTURE "$flac_file"
-metaflac --import-picture-from="$cropped_thumb" "$flac_file"
+# embed thumbnail 
+python3 <<EOF
+from mutagen.id3 import ID3, APIC, error
+from mutagen.mp3 import MP3
+
+audio = MP3("$mp3_file", ID3=ID3)
+try:
+    audio.add_tags()
+except error:
+    pass
+
+with open("$cropped_thumb", 'rb') as albumart:
+    audio.tags.add(
+        APIC(
+            encoding=3,         # UTF-8
+            mime='image/jpeg',  # Image MIME type
+            type=3,              # Cover front
+            desc='Cover',
+            data=albumart.read()
+        )
+    )
+
+audio.save()
+EOF
 
 
-#exit
-mv "$flac_file" "$HOME/Music/"
+
+
+mv "$mp3_file" "$HOME/Music/"
 rm -rf "$workdir"
 
-printf '\nDownloaded: %s\n' "$(basename "$flac_file")"
-
+printf "\nDownloaded and tagged: %s\n" "$(basename "$mp3_file")"
 read -rp "Press Enter to exit..."
-

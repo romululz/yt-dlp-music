@@ -6,9 +6,23 @@ Simple [yt-dlp](https://github.com/yt-dlp/yt-dlp) bash script that formats all a
 
 ### Dependencies
 
+Arch
 ```
 sudo pacman -S yt-dlp ffmpeg python-mutagen git wget imagemagick flac
 ```
+
+Fedora
+```
+sudo dnf install -y yt-dlp ffmpeg python3-mutagen git wget ImageMagick flac
+```
+
+Ubuntu / Mint / Debian 
+```
+sudo apt install -y yt-dlp ffmpeg python3-mutagen git wget imagemagick flac
+```
+
+
+
 
 ### Script Installation
 

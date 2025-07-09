@@ -80,5 +80,11 @@ All music is downloaded to ~/Music/ to change this edit
 
 and change --output to your liking.
 
+### Uninstall
+
+```
+rm  ~/.local/bin/yt-dlp-music
+```
+
 
 

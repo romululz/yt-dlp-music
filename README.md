@@ -63,6 +63,12 @@ echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
+### Uninstall
+
+```
+rm  ~/.local/bin/yt-dlp-music
+```
+
 ### Usage
 
 ```
@@ -80,11 +86,6 @@ All music is downloaded to ~/Music/ to change this edit
 
 and change --output to your liking.
 
-### Uninstall
-
-```
-rm  ~/.local/bin/yt-dlp-music
-```
 
 
 
